@@ -4,9 +4,10 @@ program mesh_shift                                                 ! === Driver 
   use mesh_translate_ops, only: translate_nodes                      ! --- Translator ---
   use mesh_writer, only: write_mesh                                 ! --- Writer ---
   implicit none                                                     ! --- No Implicits ---
-  character(len=*), parameter :: input_file = '/cldata/cvellala/Mesh_Translation_Tool/Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted.inp'           ! Input path
-  character(len=*), parameter :: output_file = '/cldata/cvellala/Mesh_Translation_Tool/Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted1.inp'        ! Output path
-  real(real64), parameter :: dx = 0.0_real64, dy = 0.0_real64, dz = 10.0_real64 ! Shifts
+  character(len=*), parameter :: base_dir    = '/cldata/cvellala/Mesh_Translation_Tool/'
+  character(len=*), parameter :: input_file  = base_dir // 'Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted1.inp'
+  character(len=*), parameter :: output_file = base_dir // 'Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted2.inp'
+  real(real64), parameter :: dx = 10.0_real64, dy = 0.0_real64, dz = 0.0_real64 ! Shifts
   integer, allocatable :: ids(:)                                    ! Node IDs
   real(real64), allocatable :: x(:), y(:), z(:)                     ! Coordinates
   integer :: node_count                                             ! Node total
@@ -14,5 +15,4 @@ program mesh_shift                                                 ! === Driver 
   call translate_nodes(node_count, x, y, z, dx, dy, dz)             ! Apply shift
   call write_mesh(input_file, output_file, node_count, ids, x, y, z) ! Save mesh
 end program mesh_shift                                              ! === End Driver ===
-
 
