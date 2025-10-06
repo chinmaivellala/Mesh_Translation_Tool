@@ -1,18 +1,21 @@
-program mesh_shift                                                 
-  use iso_fortran_env, only: real64                                 
-  use mesh_reader, only: read_mesh                                  
-  use mesh_translate_ops, only: translate_nodes                      
-  use mesh_writer, only: write_mesh                                 
-  implicit none                                                    
-  character(len=*), parameter :: base_dir    = '/cldata/cvellala/Mesh_Translation_Tool/'
-  character(len=*), parameter :: input_file  = base_dir // 'Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted1.inp'
-  character(len=*), parameter :: output_file = base_dir // 'Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted2.inp'
-  real(real64), parameter :: dx = 10.0_real64, dy = 0.0_real64, dz = 0.0_real64 ! Shifts
-  integer, allocatable :: ids(:)                                    
-  real(real64), allocatable :: x(:), y(:), z(:)                     
-  integer :: node_count                                             
-  call read_mesh(input_file, node_count, ids, x, y, z)              
-  call translate_nodes(node_count, x, y, z, dx, dy, dz)             
-  call write_mesh(input_file, output_file, node_count, ids, x, y, z) 
-end program mesh_shift                                              
+!==============================================================
+! Program: mesh_shift
+! Purpose: Orchestrate the mesh translation pipeline by invoking
+!          parameter loading, mesh read, coordinate translation,
+!          and write-out stages in sequence.
+! Created by Chinmai Vellala
+! Date : 06/10/2025
+!==============================================================
+program mesh_shift
+  implicit none
 
+  ! external tells the compiler these names refer to subroutines defined elsewhere.
+  external :: read_params, read_mesh, translate_nodes, write_mesh
+
+  call read_params()       ! Load translation offsets and file paths
+  call read_mesh()         ! Populate mesh_store with input mesh data
+  call translate_nodes()   ! Apply dx/dy/dz offsets to the stored mesh
+  call write_mesh()        ! Write the translated mesh to the output file
+end program mesh_shift
+
+ 

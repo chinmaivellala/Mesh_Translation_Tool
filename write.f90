@@ -1,22 +1,61 @@
-module mesh_writer                                       
-  use iso_fortran_env, only: real64                    
-contains                                                
-  subroutine write_mesh(input_path, output_path, count, ids, x, y, z)
-    character(len=*), intent(in) :: input_path, output_path ; integer, intent(in) :: count, ids(:) ! File names / IDs
-    real(real64), intent(in) :: x(:), y(:), z(:) ; integer :: in_unit, out_unit, ios, i            ! Coordinates / working vars
-    character(len=256) :: line ; logical :: nodes                                                 ! Line buffer / state flag
-    open(newunit=in_unit, file=input_path, status='old', action='read', iostat=ios) ; if (ios /= 0) return  ! Open source
-    open(newunit=out_unit, file=output_path, status='replace', iostat=ios) ; if (ios /= 0) then ; close(in_unit) ; return ; end if  ! Prepare output
-    nodes = .false. ; do                                                                          ! Main copy loop
-      read(in_unit, '(A)', iostat=ios) line ; if (ios /= 0) exit ; line = adjustl(line)           ! Grab next line
-      if (.not. nodes) then                                                                       ! Outside node block
-        write(out_unit, '(A)') trim(line) ; if (index(line, '*NODE') == 1) then                   ! Copy line / detect header
-          nodes = .true. ; do i = 1, count                                                        ! Enter node replacement
-            write(out_unit, '(I0,3(", ",ES12.5))') ids(i), x(i), y(i), z(i)                     ! Emit translated node
-          end do ; end if
-      else                                                                                        ! Inside node block
-        if (line(1:1) == '*') then ; nodes = .false. ; write(out_unit, '(A)') trim(line) ; end if ! Resume copying on next keyword
+!==============================================================
+! Subroutine: write_mesh
+! Purpose   : Stream the original mesh file to a new output while
+!             replacing the NODE block with the translated
+!             coordinates stored in mesh_store.
+! Created by Chinmai Vellala
+! Date : 06/10/2025
+!==============================================================
+subroutine write_mesh()
+  use parameter_store, only : input_file, output_file ! Paths gathered from params.in
+  use mesh_store, only : mesh                         ! Mesh with translated nodes
+  implicit none
+
+  integer :: in_unit, out_unit, ios, i
+  character(len=256) :: line
+  logical :: nodes
+
+  ! Open source mesh for reading
+  open(newunit=in_unit, file=input_file, status='old', action='read', iostat=ios)
+  if (ios /= 0) then
+    print *, 'Error opening input for writing: ', trim(input_file)
+    return
+  end if
+
+  ! Create/overwrite destination mesh file
+  open(newunit=out_unit, file=output_file, status='replace', iostat=ios)
+  if (ios /= 0) then
+    print *, 'Error opening output file: ', trim(output_file)
+    close(in_unit)
+    return
+  end if
+
+  nodes = .false.   ! Tracks whether we are currently inside the *NODE section
+
+  ! Copy line-by-line, injecting translated nodes when needed
+  do
+    read(in_unit, '(A)', iostat=ios) line
+    if (ios /= 0) exit
+    line = adjustl(line)
+
+    if (.not. nodes) then
+      write(out_unit, '(A)') trim(line)
+      if (index(line, '*NODE') == 1) then
+        nodes = .true.
+        ! Emit translated coordinates for each stored node
+        do i = 1, size(mesh%nodes)
+          write(out_unit, '(I0,3(", ",ES12.5))') mesh%nodes(i)%id, mesh%nodes(i)%x, mesh%nodes(i)%y, mesh%nodes(i)%z
+        end do
       end if
-    end do ; close(in_unit) ; close(out_unit)                                                    
-  end subroutine write_mesh
-end module mesh_writer                                      
+    else
+      if (line(1:1) == '*') then
+        nodes = .false.
+        ! Once we hit the next section header, resume copying lines verbatim.
+        write(out_unit, '(A)') trim(line)
+      end if
+    end if
+  end do
+
+  close(in_unit)
+  close(out_unit)
+end subroutine write_mesh

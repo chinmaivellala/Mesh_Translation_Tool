@@ -1,0 +1,9 @@
+# Parameter file for mesh translation
+# Input file path
+input_file = /cldata/cvellala/Mesh_Translation_Tool/Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted.inp
+# Output file path
+output_file = /cldata/cvellala/Mesh_Translation_Tool/Mesh_BLADE_COLD_STRUCTURAL_NegJacobDeleted3.inp
+# Translation distances
+dx = 10.0
+dy = 0.0
+dz = 0.0
