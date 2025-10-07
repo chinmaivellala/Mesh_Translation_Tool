@@ -1,8 +1,7 @@
 !==============================================================
 ! Subroutine: write_mesh
-! Purpose   : Stream the original mesh file to a new output while
-!             replacing the NODE block with the translated
-!             coordinates stored in the provided mesh object.
+! Purpose: Write a new mesh file by copying the original and
+!          replacing NODE coordinates with the translated values
 ! Created by Chinmai Vellala 06/10/2025
 ! Modified 07/10/2025
 !==============================================================

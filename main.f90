@@ -1,8 +1,7 @@
 !==============================================================
 ! Program: mesh_shift
-! Purpose: Orchestrate the mesh translation pipeline by invoking
-!          parameter loading, mesh read, coordinate translation,
-!          and write-out stages in sequence.
+! Purpose: Runs the mesh translation process by loading parameters,
+!          reading the mesh, shifting coordinates, and writing new file.
 ! Created by Chinmai Vellala 06/10/2025
 ! Modified 07/10/2025
 !==============================================================

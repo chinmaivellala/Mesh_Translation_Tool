@@ -1,7 +1,6 @@
 !==============================================================
 ! File: read_parameters.f90
-! Purpose: Populate a parameter_store record by parsing
-!          key/value settings from params.txt.
+! Purpose: Fill parameter_store with key/value pairs from params.txt
 ! Created by Chinmai Vellala 06/10/2025
 ! Modified 07/10/2025
 !==============================================================

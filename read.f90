@@ -1,7 +1,6 @@
 !==============================================================
 ! File: read.f90
-! Purpose: Load mesh data from the source file into the provided
-!          mesh_data_t
+! Purpose: Load mesh data from file into mesh_data_t
 ! Created by Chinmai Vellala 06/10/2025
 ! Modified 07/10/2025
 !==============================================================

@@ -1,7 +1,6 @@
 !==============================================================
 ! Subroutine: translate_mesh
-! Purpose   : Apply the translation offsets stored in params to
-!             every node in the mesh object provided.
+! Purpose: Shift all mesh nodes using translation offsets from params
 ! Created by Chinmai Vellala 06/10/2025
 ! Modified 07/10/2025
 !==============================================================

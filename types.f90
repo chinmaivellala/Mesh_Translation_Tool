@@ -1,8 +1,6 @@
 !==============================================================
 ! File: types.f90
-! Purpose: Centralize all derived type definitions used by the
-!          mesh translation workflow so they can be shared
-!          without introducing global state.
+! Purpose: Define all derived types for the mesh translation workflow
 ! Created by Chinmai Vellala on 07/10/2025
 !==============================================================
 module parameter_types
