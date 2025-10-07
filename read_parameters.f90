@@ -1,32 +1,24 @@
 !==============================================================
 ! File: read_parameters.f90
-! Purpose: Store global translation parameters and load them
-!          from a simple control file (params.txt).
-! Created by Chinmai Vellala
-! Date : 06/10/2020
+! Purpose: Populate a parameter_store record by parsing
+!          key/value settings from params.txt.
+! Created by Chinmai Vellala 06/10/2025
+! Modified 07/10/2025
 !==============================================================
-module parameter_store
+subroutine read_params(params)
   use iso_fortran_env, only : real64
+  use parameter_types, only : parameter_store
   implicit none
-  ! Offsets applied to each node during translation.
-  real(real64) :: dx = 0.0_real64, dy = 0.0_real64, dz = 0.0_real64
-  ! Paths to the source mesh and the destination mesh file.
-  character(len=256) :: input_file = '', output_file = ''
-end module parameter_store
-
-subroutine read_params()
-  use iso_fortran_env, only : real64
-  use parameter_store
-  implicit none
+  type(parameter_store), intent(inout) :: params
   integer :: unit, ios
   character(len=256) :: line, key, value
 
   ! Reset defaults before parsing the control file
-  dx = 0.0_real64
-  dy = 0.0_real64
-  dz = 0.0_real64
-  input_file = ''
-  output_file = ''
+  params%dx = 0.0_real64
+  params%dy = 0.0_real64
+  params%dz = 0.0_real64
+  params%input_file = ''
+  params%output_file = ''
 
   ! Open the control file for reading
   open(newunit=unit, file='params.txt', status='old', action='read', iostat=ios)
@@ -49,15 +41,15 @@ subroutine read_params()
       ! Route each value to the matching setting.
       select case (key)
       case ('dx')
-        read(value, *) dx
+        read(value, *) params%dx
       case ('dy')
-        read(value, *) dy
+        read(value, *) params%dy
       case ('dz')
-        read(value, *) dz
+        read(value, *) params%dz
       case ('input_file')
-        input_file = value
+        params%input_file = value
       case ('output_file')
-        output_file = value
+        params%output_file = value
       end select
     end if
   end do

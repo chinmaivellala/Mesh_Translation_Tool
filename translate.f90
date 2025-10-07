@@ -1,22 +1,24 @@
 !==============================================================
-! Subroutine: translate_nodes
-! Purpose   : Apply the global translation offsets (dx, dy, dz)
-!             to every node stored in mesh_store.
-! Created by Chinmai Vellala
-! Date : 06/10/2025
+! Subroutine: translate_mesh
+! Purpose   : Apply the translation offsets stored in params to
+!             every node in the mesh object provided.
+! Created by Chinmai Vellala 06/10/2025
+! Modified 07/10/2025
 !==============================================================
-subroutine translate_nodes()
-  use parameter_store, only : dx, dy, dz      ! Pull in the global offsets
-  use mesh_store, only : mesh                ! Access the mesh data 
+subroutine translate_mesh(mesh, params)
+  use mesh_types, only : mesh_data_t
+  use parameter_types, only : parameter_store
   implicit none
 
+  type(mesh_data_t), intent(inout) :: mesh
+  type(parameter_store), intent(in) :: params
   integer :: i
 
-  ! Shift each node coordinate by the requested offsets
+  if (.not. allocated(mesh%nodes)) return
+
   do i = 1, size(mesh%nodes)
-    ! size(mesh%nodes) tells us how many nodes are stored.
-    mesh%nodes(i)%x = mesh%nodes(i)%x + dx
-    mesh%nodes(i)%y = mesh%nodes(i)%y + dy
-    mesh%nodes(i)%z = mesh%nodes(i)%z + dz
+    mesh%nodes(i)%x = mesh%nodes(i)%x + params%dx
+    mesh%nodes(i)%y = mesh%nodes(i)%y + params%dy
+    mesh%nodes(i)%z = mesh%nodes(i)%z + params%dz
   end do
-end subroutine translate_nodes
+end subroutine translate_mesh

@@ -3,19 +3,23 @@
 ! Purpose: Orchestrate the mesh translation pipeline by invoking
 !          parameter loading, mesh read, coordinate translation,
 !          and write-out stages in sequence.
-! Created by Chinmai Vellala
-! Date : 06/10/2025
+! Created by Chinmai Vellala 06/10/2025
+! Modified 07/10/2025
 !==============================================================
 program mesh_shift
+  use parameter_types, only : parameter_store
+  use mesh_types, only : mesh_data_t
   implicit none
 
-  ! external tells the compiler these names refer to subroutines defined elsewhere.
-  external :: read_params, read_mesh, translate_nodes, write_mesh
+  external :: read_params, read_mesh, translate_mesh, write_mesh
 
-  call read_params()       ! Load translation offsets and file paths
-  call read_mesh()         ! Populate mesh_store with input mesh data
-  call translate_nodes()   ! Apply dx/dy/dz offsets to the stored mesh
-  call write_mesh()        ! Write the translated mesh to the output file
+  type(parameter_store) :: params
+  type(mesh_data_t) :: mesh
+
+  call read_params(params)
+  call read_mesh(mesh, params)
+  call translate_mesh(mesh, params)
+  call write_mesh(mesh, params)
 end program mesh_shift
 
  

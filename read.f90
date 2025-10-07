@@ -1,51 +1,18 @@
 !==============================================================
 ! File: read.f90
-! Purpose: Provide shared mesh storage and load input
-!          files into memory so other stages can operate on the
-!          parsed data.
-! Created by Chinmai Vellala
-!Date : 06/10/2025
+! Purpose: Load mesh data from the source file into the provided
+!          mesh_data_t
+! Created by Chinmai Vellala 06/10/2025
+! Modified 07/10/2025
 !==============================================================
-module mesh_store
+subroutine read_mesh(mesh, params)
   use iso_fortran_env, only : real64
+  use mesh_types, only : mesh_data_t, node_t, element_t, set_t
+  use parameter_types, only : parameter_store
   implicit none
 
-  ! Node entry with unique id and 3D coordinates
-  type :: node_t
-    integer :: id
-    real(real64) :: x, y, z
-  end type node_t
-
-  ! Quadratic tetrahedral element with 10 node references
-  type :: element_t
-    integer :: id
-    integer :: nodes(10)
-  end type element_t
-
-  ! Container for node or element set membership
-  type :: set_t
-    character(len=256) :: name
-    integer, allocatable :: ids(:)
-  end type set_t
-
-  ! Complete mesh payload used by translate/write routines
-  type :: mesh_data_t
-    type(node_t), allocatable :: nodes(:)
-    type(element_t), allocatable :: elements(:)
-    type(set_t), allocatable :: elsets(:)
-    type(set_t), allocatable :: nsets(:)
-  end type mesh_data_t
-
-  ! Shared instance populated by read_mesh
-  type(mesh_data_t) :: mesh
-end module mesh_store
-
-
-subroutine read_mesh()
-  use iso_fortran_env, only : real64
-  use parameter_store, only : input_file
-  use mesh_store
-  implicit none
+  type(mesh_data_t), intent(inout) :: mesh
+  type(parameter_store), intent(in) :: params
 
   integer :: unit, ios                ! File unit number and I/O status code
   character(len=256) :: line          ! Raw line read from the mesh file
@@ -73,9 +40,9 @@ subroutine read_mesh()
   allocate(mesh%nodes(0), mesh%elements(0), mesh%elsets(0), mesh%nsets(0))
 
   ! Open the mesh file
-  open(newunit=unit, file=input_file, status='old', action='read', iostat=ios)
+  open(newunit=unit, file=params%input_file, status='old', action='read', iostat=ios)
   if (ios /= 0) then
-    print *, 'Error opening mesh file: ', trim(input_file)
+    print *, 'Error opening mesh file: ', trim(params%input_file)
     return
   end if
 
@@ -115,15 +82,15 @@ subroutine read_mesh()
         new_set%name = trim(line(index(line, 'ELSET=')+6:))
         if (allocated(new_set%ids)) deallocate(new_set%ids)
         allocate(new_set%ids(0))
-        mesh%elsets = [mesh%elsets, new_set]
-        current_elset = size(mesh%elsets)
+  mesh%elsets = [mesh%elsets, new_set]
+  current_elset = size(mesh%elsets)
       else if (index(line, '*NSET') == 1) then
         in_nset = .true.
         new_set%name = trim(line(index(line, 'NSET=')+5:))
         if (allocated(new_set%ids)) deallocate(new_set%ids)
         allocate(new_set%ids(0))
-        mesh%nsets = [mesh%nsets, new_set]
-        current_nset = size(mesh%nsets)
+  mesh%nsets = [mesh%nsets, new_set]
+  current_nset = size(mesh%nsets)
       end if
 
       cycle
