@@ -23,7 +23,7 @@ subroutine read_mesh(mesh, params)
   character(len=256) :: chunk         ! Slice of a set line containing one number
   type(set_t) :: new_set              ! Builder record for a new set definition
 
-  ! Reset parser state before scanning
+  ! Reset state before scanning to know in which section we are in 
   in_nodes = .false.
   in_elements = .false.
   in_elset = .false.
@@ -95,7 +95,7 @@ subroutine read_mesh(mesh, params)
       cycle
     end if
 
-  ! Ignore completely blank lines so we do not attempt to parse them.
+  ! Ignore completely blank lines so we do not attempt to read them.
   if (len_trim(line) == 0) cycle
 
     ! Consume block entries based on the active section type
@@ -141,7 +141,7 @@ subroutine read_mesh(mesh, params)
               if (in_nset) mesh%nsets(current_nset)%ids = [mesh%nsets(current_nset)%ids, val]
             end if
           end if
-          ! Move "pos" forward to the character just after the comma we processed.
+          ! Move "position" forward to the character just after the comma we processed.
           pos = pos + comma
         end if
       end do

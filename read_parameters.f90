@@ -12,7 +12,7 @@ subroutine read_params(params)
   integer :: unit, ios
   character(len=256) :: line, key, value
 
-  ! Reset defaults before parsing the control file
+  ! Reset defaults before reading the control file
   params%dx = 0.0_real64
   params%dy = 0.0_real64
   params%dz = 0.0_real64
@@ -26,7 +26,7 @@ subroutine read_params(params)
     return
   end if
 
-  ! Read key/value pairs until EOF
+  ! Read key/value pairs until End of file
   do
     read(unit, '(A)', iostat=ios) line
     if (ios /= 0) exit
